@@ -30,12 +30,14 @@ void TLine::GetEndPoint(double &xE, double &yE) {
 }
 
 void TLine::Read(TStream &stream) {
+    fStreamTranslator.StreamTranslator(stream,
+                                       stream.fCurrentVersion);
     stream >> fXb;
-    stream >> fXe;
     stream >> fYb;
+    stream >> fXe;
     stream >> fYe;
 }
-void TLine::Write(TStream &stream) const{
+void TLine::Write(TStream &stream) const {
     stream << fXb;
     stream << fXe;
     stream << fYb;

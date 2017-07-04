@@ -1,7 +1,6 @@
 #ifndef TSTREAM_H
 #define TSTREAM_H
-#include <fstream>
-#include <string>
+#include <iostream>
 
 class TStream {
   public:
@@ -10,17 +9,11 @@ class TStream {
     ~TStream();
     TStream &operator=(const TStream &cp);
 
-    void OpenRead(const std::string &fileName);
-    void OpenWrite(const std::string &fileName);
+    virtual void ReadFromStream(char *dest, unsigned int nBytes) = 0;
+    virtual TStream &operator>>(double &var) = 0;
+    virtual TStream &operator<<(const double &var) = 0;
 
-    void CloseRead();
-    void CloseWrite();
-
-    TStream &operator>>(double &var);
-    TStream &operator<<(const double &var);
-
-  private:
-    std::ifstream fIn;
-    std::ofstream fOut;
+    static const unsigned long fCurrentVersion = 1;
+    unsigned long fFromVersion;
 };
 #endif // TSTREAM_H

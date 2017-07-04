@@ -1,7 +1,7 @@
 #ifndef TLINE_H
 #define TLINE_H
 #include "TStream.h"
-
+#include "TLineTranslator.h"
 class TLine {
   public:
     TLine();
@@ -18,6 +18,7 @@ class TLine {
     void Write(TStream &stream) const;//stream!!
 
   private:
+    TLineTranslator fStreamTranslator;
     double fXb, fXe, fYb, fYe;
 };
 #endif // TLINE_H

@@ -1,5 +1,5 @@
 #include "TLine.h"
-#include "TStream.h"
+#include "TFileStream.h"
 #include <iostream>
 
 int main(int argc, char *argv[]) {
@@ -8,24 +8,34 @@ int main(int argc, char *argv[]) {
                   << " - 0 for reading 1 for writing" << std::endl;
         return 1;
     }
+    if (argv[1][0] != '0' && argv[1][0] != '1')
+    {
+    	std::cout << "Usage:" << argv[0] << " [0,1]"
+                  << " - 0 for reading 1 for writing" << std::endl;
+        return 1;
+    }
     bool isSaving = false;
     if (argv[1][0] == '1') {
         isSaving = true;
     }
-    std::string fileName("../outFiles/datav0.dat");
+    std::string fileName("../outFiles/datav");
     TLine testLine;
     if (isSaving) {
+    	fileName.append(std::to_string(TStream::fCurrentVersion));
+    	fileName.append(".dat");
         std::cout << "printing..." << std::endl;
-        TStream out;
+        TFileStream out;
         out.OpenWrite(fileName);
         testLine.SetBeginPoint(0., 0.);
         testLine.SetEndPoint(1.e23, 1.);
 
         testLine.Write(out);
     } else {
-        std::cout << "reading..." << std::endl;
-        TStream in;
+    	fileName.append("0.dat");
+        TFileStream in;
         in.OpenRead(fileName);
+        std::cout << "reading from version " << in.fFromVersion << " @ version "
+              << TStream::fCurrentVersion << std::endl;
         testLine.Read(in);
     }
     double x, y;
