@@ -5,19 +5,16 @@
 
 class TBufferedStream : public TStream {
   public:
-    TBufferedStream();
-    TBufferedStream(const TBufferedStream &cp);
     TBufferedStream(TStream &readBuffer, unsigned int nBytes);
+    TBufferedStream(TStream &readBuffer);
+    TBufferedStream(TBufferedStream &readBuffer);
     ~TBufferedStream();
-    TBufferedStream &operator=(const TBufferedStream &cp);
-
-    void ReadFromStream(char *dest, unsigned int nBytes);
-    void CopyStreamReference(TStream &);
-    TStream &operator>>(double &var);
-    TStream &operator<<(const double &var);
+    void TransferBuffers();
+protected:
+    std::istream *GetReadStream();
+    std::ostream *GetWriteStream();
   private:
-    std::istringstream fIn;
-    std::ostringstream fOut;
-    TStream *fOrigStream;
+    imemstream *fIn;
+    std::ostringstream *fOut;
 };
 #endif // TBUFFEREDSTREAM_H

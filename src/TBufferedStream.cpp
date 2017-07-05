@@ -1,48 +1,74 @@
 #include "TBufferedStream.h"
-#include "TFileStream.h"
+#include <iostream>
+#include <stdexcept>
 #include <iostream>
 
-TBufferedStream::TBufferedStream() :fOrigStream(NULL){}
-
-TBufferedStream::TBufferedStream(const TBufferedStream &cp){
-    *this = cp;
-}
-
-TBufferedStream::TBufferedStream(TStream &readBuffer, unsigned int nBytes){
+TBufferedStream::TBufferedStream(TStream &readBuffer, unsigned int nBytes) {
     char *temp;
-    readBuffer.ReadFromStream(temp, nBytes);
-    fOut.write( temp, nBytes);
-    fOrigStream = &readBuffer;
+    TStream::ReadFromStream(&readBuffer, temp, nBytes);
+    // for (int i = 0; i < nBytes; ++i)
+    // {
+    //     std::cout<<temp[i];
+    // }
+    // std::cout<<std::endl;
+    fOut = new std::ostringstream();
+    fIn = new imemstream(temp, nBytes);
+    fIn->clear();
+    // double w, x, y, z;
+    // fIn->read(reinterpret_cast<char *>(&w), sizeof(double));
+    // fIn->read(reinterpret_cast<char *>(&x), sizeof(double));
+    // fIn->read(reinterpret_cast<char *>(&y), sizeof(double));
+    // fIn->read(reinterpret_cast<char *>(&z), sizeof(double));
+    // std::cout << w << std::endl;
+    // std::cout << x << std::endl;
+    // std::cout << y << std::endl;
+    // std::cout << z << std::endl;
+    return;
 }
+
+TBufferedStream::TBufferedStream(TStream &readBuffer) {
+    unsigned int nBytes = (unsigned int)TStream::StreamSize(&readBuffer);
+    char *temp;
+    TStream::ReadFromStream(&readBuffer, temp, nBytes);
+    fIn = new imemstream(temp , nBytes);
+    fOut = new std::ostringstream();
+}
+// whyy
+TBufferedStream::TBufferedStream(TBufferedStream &readBuffer) {
+    std::istream *in = readBuffer.GetReadStream();
+    double w, x, y, z;
+    in->read(reinterpret_cast<char *>(&w), sizeof(double));
+    in->read(reinterpret_cast<char *>(&x), sizeof(double));
+    in->read(reinterpret_cast<char *>(&y), sizeof(double));
+    in->read(reinterpret_cast<char *>(&z), sizeof(double));
+    std::cout << w << std::endl;
+    std::cout << x << std::endl;
+    std::cout << y << std::endl;
+    std::cout << z << std::endl;
+
+    unsigned int nBytes = (unsigned int)TStream::StreamSize(&readBuffer);
+    char *temp;
+    TStream::ReadFromStream(&readBuffer, temp, nBytes);
+    fIn = new imemstream(temp,nBytes);
+    fOut = new std::ostringstream();
+}
+
 TBufferedStream::~TBufferedStream() {
-    if(!fIn.eof()){//returning without consuming the buffer
-        throw std::exception();
+    if (!fIn->eof()) { // returning without consuming the buffer
+        throw std::runtime_error(
+            "TBufferedStream: I still have data to be read");
     }
+    delete fIn;
+    delete fOut;
 }
 
-TBufferedStream &TBufferedStream::operator=(const TBufferedStream &cp) {
-    this->fOrigStream = cp.fOrigStream;
-    return *this;
-}
-void TBufferedStream::ReadFromStream(char *dest, unsigned int nBytes){
-    if(dest != NULL) delete [] dest;
-    dest = new char[nBytes];
-
-    fIn.read(dest, nBytes); 
-}
-
-void TBufferedStream::CopyStreamReference(TStream &origStream){
-    fOrigStream = &origStream;
-}
-
-TStream &TBufferedStream::operator>>(double &var) {
-    if (fIn.eof()){//the buffer has been read, moving to original stream
-        return fOrigStream->operator>>(var);
+void TBufferedStream::TransferBuffers() {
+    if (!fIn->eof()) { // transfering without consuming the buffer
+        throw std::runtime_error(
+            "TBufferedStream: I still have data to be read before transfer!");
     }
-    fIn.read(reinterpret_cast<char *>(&var), sizeof(var));
-    return *this;
+    delete fIn;
+    fIn = new imemstream(fOut->str().c_str(),strlen(fOut->str().c_str()));
 }
-TStream &TBufferedStream::operator<<(const double &var) {
-    fOut.write(reinterpret_cast<const char *>(&var), sizeof(var));
-    return *this;
-}
+std::istream *TBufferedStream::GetReadStream() { return fIn; }
+std::ostream *TBufferedStream::GetWriteStream() { return fOut; }

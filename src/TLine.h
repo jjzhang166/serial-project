@@ -1,7 +1,9 @@
 #ifndef TLINE_H
 #define TLINE_H
+
 #include "TStream.h"
 #include "TLineTranslator.h"
+
 class TLine {
   public:
     TLine();

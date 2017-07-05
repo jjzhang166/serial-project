@@ -1,84 +1,77 @@
 #include "TFileStream.h"
+#include <exception>
 #include <iostream>
 
-TFileStream::TFileStream() {}
-
-TFileStream::TFileStream(const TFileStream &cp) {}
+TFileStream::TFileStream() {
+    fIn = new std::ifstream();
+    fOut = new std::ofstream();
+}
 
 TFileStream::~TFileStream() {
     CloseWrite();
     CloseRead();
-}
-TFileStream &TFileStream::operator=(const TFileStream &cp) {
-    throw std::exception();//should not be called!!!
+    delete fOut;
+    delete fIn;
 }
 
 void TFileStream::OpenRead(const std::string &fileName) {
-    if (fIn.is_open()) {
-        throw std::exception();
+    if (fIn->is_open()) {
+        throw std::runtime_error("TFileStream: File is already opened");
     }
-    fIn.open(fileName.c_str(), std::ifstream::binary);
-    if (!fIn.is_open()) {
-        throw std::exception();
+    fIn->open(fileName.c_str(), std::ifstream::binary);
+    if (!fIn->is_open()) {
+        throw std::runtime_error("TFileStream: Could not open file");
     }
 
     std::string versionString("FileVersion");
     char versionRead[12];
-    fIn.read(versionRead, 11); // reads header of inputfile
-    versionRead[11] = '\0';    // terminates c-style string
+    fIn->read(versionRead, 11); // reads header of inputfile
+    versionRead[11] = '\0';     // terminates c-style string
 
     if (strcmp(versionString.c_str(), versionRead) == 0) { // versioned file
-        fIn.read(reinterpret_cast<char *>(&fFromVersion), sizeof(fFromVersion));
+        fIn->read(reinterpret_cast<char *>(&fFromVersion),
+                  sizeof(fFromVersion));
     } else { // unversioned file aka V0
         fFromVersion = 0;
-        fIn.seekg(0, fIn.beg); // goes back to beginning of file
+        fIn->seekg(0, fIn->beg); // goes back to beginning of file
     }
-    //fill stream
+    // fill stream
 }
 void TFileStream::OpenWrite(const std::string &fileName) {
-    if (fOut.is_open()) {
+    if (fOut->is_open()) {
         throw std::exception();
     }
-    fOut.open(fileName.c_str(), std::ofstream::binary);
-    if (!fOut.is_open()) {
+    fOut->open(fileName.c_str(), std::ofstream::binary);
+    if (!fOut->is_open()) {
         throw std::exception();
     }
     std::string fileInfo("FileVersion");
-    fOut.write(fileInfo.c_str(),std::strlen(fileInfo.c_str()));
+    fOut->write(fileInfo.c_str(), std::strlen(fileInfo.c_str()));
     const unsigned long temp = fCurrentVersion;
-    fOut.write(reinterpret_cast<const char *>(&temp), sizeof(temp));
+    fOut->write(reinterpret_cast<const char *>(&temp), sizeof(temp));
 }
 
 void TFileStream::CloseRead() {
-    if (fIn.is_open()) {
-        fIn.close();
+    if (fIn->is_open()) {
+        fIn->close();
     }
 }
 
 void TFileStream::CloseWrite() {
-    if (fOut.is_open()) {
-        fOut.close();
+    if (fOut->is_open()) {
+        fOut->close();
     }
 }
 
-void TFileStream::ReadFromStream(char *dest, unsigned int nBytes){
-    if(dest != NULL) delete [] dest;
-    dest = new char[nBytes];
-
-    fIn.read(dest, nBytes); 
-}
-
-TStream &TFileStream::operator>>(double &var) {
-    fIn.read(reinterpret_cast<char *>(&var), sizeof(var));
-    if (fIn.bad()) {
-        throw std::exception();
+std::istream *TFileStream::GetReadStream() {
+    if (!fIn){
+        throw std::runtime_error("TFileStream: there is no in stream");
     }
-    return *this;
+    return fIn;
 }
-TStream &TFileStream::operator<<(const double &var) {
-    fOut.write(reinterpret_cast<const char *>(&var), sizeof(var));
-    if (fOut.bad()) {
-        throw std::exception();
+std::ostream *TFileStream::GetWriteStream() {
+    if (!fOut){
+        throw std::runtime_error("TFileStream: there is no out stream");
     }
-    return *this;
+    return fOut;
 }

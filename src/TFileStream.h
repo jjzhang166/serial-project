@@ -7,21 +7,20 @@
 class TFileStream : public TStream {
   public:
     TFileStream();
-    TFileStream(const TFileStream &cp);
     ~TFileStream();
-    TFileStream &operator=(const TFileStream &cp);
 
     void OpenRead(const std::string &fileName);
     void OpenWrite(const std::string &fileName);
 
     void CloseRead();
     void CloseWrite();
-    void ReadFromStream(char *dest, unsigned int nBytes);
-    TStream &operator>>(double &var);
-    TStream &operator<<(const double &var);
+
+  protected:
+    std::istream *GetReadStream();
+    std::ostream *GetWriteStream();
 
   private:
-    std::ifstream fIn;
-    std::ofstream fOut;
+    std::ifstream *fIn;
+    std::ofstream *fOut;
 };
 #endif // TFILESTREAM_H
