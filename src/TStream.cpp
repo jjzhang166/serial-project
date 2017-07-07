@@ -1,6 +1,6 @@
 #include "TStream.h"
 #include <iostream>
-
+#include <fstream>
 TStream::TStream() {}
 
 TStream::~TStream() {}
@@ -24,22 +24,29 @@ TStream &TStream::operator<<(const double &var) {
 
 std::streamsize TStream::StreamSize(TStream *stream) {
     std::istream *in = stream->GetReadStream();
-    std::streampos fsize = 0;
-    fsize = in->tellg();
-    in->seekg(0, std::ios::end);
-    fsize = in->tellg() - fsize;
-    std::cout<<fsize<<std::endl;
-    if (fsize < 0) {
-        std::runtime_error("TStream: Could not get stream size");
+    // double w, x, y, z;
+    // in->read(reinterpret_cast<char *>(&w), sizeof(double));
+    // in->read(reinterpret_cast<char *>(&x), sizeof(double));
+    // in->read(reinterpret_cast<char *>(&y), sizeof(double));
+    // in->read(reinterpret_cast<char *>(&z), sizeof(double));
+    // std::cout << w << std::endl;
+    // std::cout << x << std::endl;
+    // std::cout << y << std::endl;
+    // std::cout << z << std::endl;
+    in->seekg (0, in->end );
+    int fsize = in->tellg();//doesnt work
+    in->seekg (0, in->beg );
+    if (fsize == -1) {
+        throw std::runtime_error("TStream: Could not get stream size");
     }
-    return (std::streamsize)fsize;
+    return fsize;
 }
 
 void TStream::ReadFromStream(TStream *stream, char * &dest,
                              const unsigned int &nBytes) {
     if (!dest)
         delete[] dest;
-    dest = new char[nBytes];
+    dest = new char[nBytes];//should it be nBytes +1 (and add a null char afterwards)?
     std::istream *in = stream->GetReadStream();
     in->read(dest, nBytes);
 }

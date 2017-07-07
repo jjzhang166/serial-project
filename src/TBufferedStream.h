@@ -14,7 +14,7 @@ protected:
     std::istream *GetReadStream();
     std::ostream *GetWriteStream();
   private:
-    imemstream *fIn;
+    std::istream *fIn;
     std::ostringstream *fOut;
 };
 #endif // TBUFFEREDSTREAM_H

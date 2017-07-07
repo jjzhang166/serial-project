@@ -1,7 +1,6 @@
 #ifndef TSTREAM_H
 #define TSTREAM_H
 #include <iostream>
-
 #include <streambuf>
 
 struct imembuf: std::streambuf {
@@ -10,12 +9,17 @@ struct imembuf: std::streambuf {
         this->setg(p, p, p + size);
     }
 };
+typedef struct imembuf imembuf;
+// #include "TMemBuf.h"
+// typedef TMemBuf imembuf;
+
 struct imemstream: virtual imembuf, std::istream {
     imemstream(char const* base, size_t size)
         : imembuf(base, size)
         , std::istream(static_cast<std::streambuf*>(this)) {
     }
 };
+
 typedef struct imemstream imemstream;
 
 class TStream {
@@ -24,12 +28,11 @@ class TStream {
     ~TStream();
     TStream &operator>>(double &var);
     TStream &operator<<(const double &var);
-
+    virtual std::streamsize StreamSize(TStream *stream);
     static const unsigned long fCurrentVersion = 1;
     unsigned long fFromVersion;
 
   protected:
-    std::streamsize StreamSize(TStream *stream);
     void ReadFromStream(TStream *stream, char * &dest,
                         const unsigned int &nBytes);
     virtual std::istream *GetReadStream() = 0;

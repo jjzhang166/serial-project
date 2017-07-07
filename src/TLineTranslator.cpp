@@ -9,16 +9,6 @@ TLineTranslator::~TLineTranslator() {}
 void TLineTranslator::StreamTranslator(TStream &stream,
                                        const unsigned long toVersion) const {
     // reads N bytes (depending on stream.fFromVersion)
-    // double w,x,y,z;
-    // stream>>w;
-    // stream>>x;
-    // stream>>y;
-    // stream>>z;
-    // std::cout<<w<<std::endl;
-    // std::cout<<x<<std::endl;
-    // std::cout<<y<<std::endl;
-    // std::cout<<z<<std::endl;
-    // return;
     TBufferedStream buf(stream, SizeOfClass(stream.fFromVersion));
     /*
         switch (stream.fFromVersion) {
@@ -89,19 +79,25 @@ void TLineTranslator::UpdateFromV0(TBufferedStream &stream,
     /*expects to read fXb, fXe, fYb and fYe (all double variables)
         parameter toVersion isnt used because there arent any other
         custom classes to be translated, just default types*/
+    
+    double w, x, y, z;
+    stream >> w;
+    stream >> x;
+    stream >> y;
+    stream >> z;
+    std::cout << w << std::endl;
+    std::cout << x << std::endl;
+    std::cout << y << std::endl;
+    std::cout << z << std::endl;
     TBufferedStream cp(stream);
     double aux1, aux2;
     cp >> aux1; // reads fXb
-    std::cout<<aux1<<std::endl;
     stream << aux1;
     cp >> aux2; // reads fXe
     cp >> aux1; // reads fYb
-    std::cout<<aux1<<std::endl;
-    std::cout<<aux2<<std::endl;
     stream << aux1;
     stream << aux2;
     cp >> aux1; // reads fYe
-    std::cout<<aux1<<std::endl;
     stream << aux1;
 
     stream.TransferBuffers();
