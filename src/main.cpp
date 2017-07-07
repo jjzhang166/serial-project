@@ -1,6 +1,8 @@
 #include "TLine.h"
 #include "TFileStream.h"
 #include <iostream>
+#include <string>
+#include <string.h>
 
 int main(int argc, char *argv[]) {
     if (argc != 2 || strlen(argv[1]) != 1) {

@@ -1,6 +1,8 @@
 #include "TFileStream.h"
 #include <exception>
 #include <iostream>
+#include <string>
+#include <string.h>
 
 TFileStream::TFileStream() {
     fIn = new std::ifstream();
@@ -46,7 +48,7 @@ void TFileStream::OpenWrite(const std::string &fileName) {
         throw std::exception();
     }
     std::string fileInfo("FileVersion");
-    fOut->write(fileInfo.c_str(), std::strlen(fileInfo.c_str()));
+    fOut->write(fileInfo.c_str(), fileInfo.length());
     const unsigned long temp = fCurrentVersion;
     fOut->write(reinterpret_cast<const char *>(&temp), sizeof(temp));
 }
