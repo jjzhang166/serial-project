@@ -33,7 +33,11 @@ int main(int argc, char *argv[]) {
 
         testLine.Write(out);
     } else {
-    	fileName.append("0.dat");
+        std::cout << "Which version should I read? " << std::endl;
+        unsigned int versionNumber;
+        std::cin >> versionNumber;
+        fileName.append(std::to_string(versionNumber));
+    	fileName.append(".dat");
         TFileStream in;
         in.OpenRead(fileName);
         std::cout << "reading from version " << in.fFromVersion << " @ version "

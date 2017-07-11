@@ -12,12 +12,10 @@ TBufferedStream::TBufferedStream(TStream &readBuffer, unsigned int nBytes) : fBu
 }
 
 TBufferedStream::TBufferedStream(const TBufferedStream &other) : fBuf(NULL,0), fIn(&fBuf) {
-    std::cout << "Construtor" << std::endl;
     *this = other;
 }
 
 TBufferedStream &TBufferedStream::operator= (const TBufferedStream &other) {
-    std::cout << "Operador" << std::endl;
     unsigned int nBytes = strlen(other.fCharBuf);
     fCharBuf = new char[nBytes];
     memcpy(fCharBuf, other.fCharBuf, nBytes);
