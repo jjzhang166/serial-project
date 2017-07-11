@@ -12,12 +12,14 @@ class TMemBuf : public std::streambuf
 {
 public:
     TMemBuf(const char *begin, const size_t size);
-
+    virtual ~TMemBuf();
+    std::streamsize showmanyc();
+    void reinit(const char *begin, const size_t size);
+   
 private:
     int_type underflow();
     int_type uflow();
     int_type pbackfail(int_type ch);
-    std::streamsize showmanyc();
     std::streampos seekoff ( std::streamoff off, std::ios_base::seekdir way,
                             std::ios_base::openmode which = std::ios_base::in | std::ios_base::out );
     std::streampos seekpos ( std::streampos sp,
@@ -29,7 +31,7 @@ private:
     TMemBuf &operator= (const TMemBuf &);
 
 private:
-    const char * const begin_;
-    const char * const end_;
+    const char * begin_;
+    const char * end_;
     const char * current_;
 };

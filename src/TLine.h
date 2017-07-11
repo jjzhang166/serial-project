@@ -20,7 +20,6 @@ class TLine {
     void Write(TStream &stream) const;//stream!!
 
   private:
-    TLineTranslator fStreamTranslator;
     double fXb, fXe, fYb, fYe;
 };
 #endif // TLINE_H

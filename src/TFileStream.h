@@ -16,11 +16,11 @@ class TFileStream : public TStream {
     void CloseWrite();
 
   protected:
-    std::istream *GetReadStream();
-    std::ostream *GetWriteStream();
+    virtual std::istream &GetReadStream();
+    virtual std::ostream &GetWriteStream();
 
   private:
-    std::ifstream *fIn;
-    std::ofstream *fOut;
+    std::ifstream fIn;
+    std::ofstream fOut;
 };
 #endif // TFILESTREAM_H

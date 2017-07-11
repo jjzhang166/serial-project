@@ -4,17 +4,19 @@
 #include <sstream>
 
 class TBufferedStream : public TStream {
-  public:
+public:
     TBufferedStream(TStream &readBuffer, unsigned int nBytes);
-    TBufferedStream(TStream &readBuffer);
-    TBufferedStream(TBufferedStream &readBuffer);
+    TBufferedStream(const TBufferedStream &readBuffer);
     ~TBufferedStream();
+    TBufferedStream &operator= (const TBufferedStream &);
     void TransferBuffers();
 protected:
-    std::istream *GetReadStream();
-    std::ostream *GetWriteStream();
-  private:
-    std::istream *fIn;
-    std::ostringstream *fOut;
+    virtual std::istream &GetReadStream();
+    virtual std::ostream &GetWriteStream();
+private:
+    char *fCharBuf;
+    imembuf fBuf;
+    std::istream fIn;
+    std::ostringstream fOut;
 };
 #endif // TBUFFEREDSTREAM_H
