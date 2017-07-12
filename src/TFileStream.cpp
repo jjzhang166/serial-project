@@ -60,9 +60,16 @@ void TFileStream::CloseWrite() {
     }
 }
 
-std::istream &TFileStream::GetReadStream() {
-    return fIn;
+void TFileStream::Read(char * dest, const size_t &nBytes){
+    fIn.read(dest, nBytes);
+    if (fIn.bad()){
+        throw std::runtime_error("TFileStream:Could not read from stream");
+    }
 }
-std::ostream &TFileStream::GetWriteStream() {
-    return fOut;
+    
+void TFileStream::Write(const char *source, const size_t &nBytes){
+    fOut.write(source, nBytes);
+    if (fOut.bad()) {
+        throw std::runtime_error("TFileStream:Could not write to stream");
+    }
 }

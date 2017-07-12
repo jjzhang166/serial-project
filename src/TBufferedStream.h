@@ -5,20 +5,26 @@
 
 class TBufferedStream : public TStream {
 public:
-    TBufferedStream(TStream &readBuffer, unsigned int nBytes);
+    //TBufferedStream();
+    TBufferedStream(TStream &readBuffer, const size_t &nBytes);
     TBufferedStream(const TBufferedStream &readBuffer);
     ~TBufferedStream();
     TBufferedStream &operator= (const TBufferedStream &);
-    void TransferBuffers();
+    virtual TBufferedStream &operator<< (TBufferedStream &other);
     virtual TBufferedStream &operator<< (const TBufferedStream &other);
     using TStream::operator<<;
+    void Print();
 protected:
-    virtual std::istream &GetReadStream();
-    virtual std::ostream &GetWriteStream();
+    virtual void Read(char *dest, const size_t &nBytes);
+    virtual void ConstRead(char *dest, const size_t &nBytes) const;
+    virtual void Write(const char *source, const size_t &nBytes);
 private:
-    std::istream fIn;
-    std::ostringstream fOut;
-    char *fCharBuf;
-    TMemBuf fBuf;
+    char *fBuffer;
+    char *fFirst;
+    char *fLast;
+    size_t nAllocatedBytes;
+    size_t fSize;
+    
+    static const size_t SIZE_INCREMENT = size_t(1);
 };
 #endif // TBUFFEREDSTREAM_H
