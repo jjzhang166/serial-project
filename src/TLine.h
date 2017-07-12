@@ -2,7 +2,7 @@
 #define TLINE_H
 
 #include "TStream.h"
-#include "TLineTranslator.h"
+#include "TPoint.h"
 
 class TLine {
   public:
@@ -20,6 +20,6 @@ class TLine {
     void Write(TStream &stream) const;//stream!!
 
   private:
-    double fXb, fXe, fYb, fYe;
+    TPoint pB, pE;
 };
 #endif // TLINE_H

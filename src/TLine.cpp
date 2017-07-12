@@ -1,44 +1,38 @@
 #include "TLine.h"
+#include "TLineTranslator.h"
 #include "iostream"
 
-TLine::TLine() { fXb = fXe = fYe = fYe = 0; }
+TLine::TLine() { 
+    pB.SetCoordinates(0., 0.);
+    pE.SetCoordinates(0., 0.);
+     }
 TLine::TLine(const TLine &cp) { (*this) = cp; }
 TLine::~TLine() {}
 TLine &TLine::operator=(const TLine &cp) {
-    fXb = cp.fXb;
-    fXe = cp.fXe;
-    fYb = cp.fYb;
-    fYe = cp.fYe;
+    pB = cp.pB;
+    pE = cp.pE;
     return *this;
 }
 
 void TLine::SetBeginPoint(const double &xB, const double &yB) {
-    fXb = xB;
-    fYb = yB;
+    pB.SetCoordinates(xB, yB);
 }
 void TLine::SetEndPoint(const double &xE, const double &yE) {
-    fXe = xE;
-    fYe = yE;
+    pE.SetCoordinates(xE, yE);
 }
 void TLine::GetBeginPoint(double &xB, double &yB) {
-    xB = fXb;
-    yB = fYb;
+    pB.GetCoordinates(xB, yB);
 }
 void TLine::GetEndPoint(double &xE, double &yE) {
-    xE = fXe;
-    yE = fYe;
+    pE.GetCoordinates(xE, yE);
 }
 
 void TLine::Read(TStream &stream) {
     TBufferedStream buf(TLineTranslator::UpdateStream(stream, TStream::fCurrentVersion));
-    buf >> fXb;
-    buf >> fYb;
-    buf >> fXe;
-    buf >> fYe;
+    pB.Read(buf);
+    pE.Read(buf);
 }
 void TLine::Write(TStream &stream) const {
-    stream << fXb;
-    stream << fYb;
-    stream << fXe;
-    stream << fYe;
+    pB.Write(stream);
+    pE.Write(stream);
 }

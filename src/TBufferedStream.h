@@ -10,13 +10,15 @@ public:
     ~TBufferedStream();
     TBufferedStream &operator= (const TBufferedStream &);
     void TransferBuffers();
+    virtual TBufferedStream &operator<< (const TBufferedStream &other);
+    using TStream::operator<<;
 protected:
     virtual std::istream &GetReadStream();
     virtual std::ostream &GetWriteStream();
 private:
-    char *fCharBuf;
-    imembuf fBuf;
     std::istream fIn;
     std::ostringstream fOut;
+    char *fCharBuf;
+    imembuf fBuf;
 };
 #endif // TBUFFEREDSTREAM_H

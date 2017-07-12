@@ -15,7 +15,7 @@ public:
     virtual ~TMemBuf();
     std::streamsize showmanyc();
     void reinit(const char *begin, const size_t size);
-   
+    inline const size_t size() const {return end_ - begin_;}    
 private:
     int_type underflow();
     int_type uflow();

@@ -27,10 +27,10 @@ class TStream {
 public:
     TStream();
     ~TStream();
-    TStream &operator>>(double &var);
-    TStream &operator<<(const double &var);
+    virtual TStream &operator>>(double &var);
+    virtual TStream &operator<<(const double &var);
     virtual std::streamsize StreamSize(TStream *stream);
-    static const unsigned long fCurrentVersion = 1;
+    static const unsigned long fCurrentVersion = 2;
     unsigned long fFromVersion;
 
 protected:
