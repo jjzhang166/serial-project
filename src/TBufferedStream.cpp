@@ -4,14 +4,14 @@
 #include <iostream>
 #include <string.h>
 
-TBufferedStream::TBufferedStream(TStream &readBuffer, unsigned int nBytes) : fBuf(NULL, 0), fIn(&fBuf) {
+TBufferedStream::TBufferedStream(TStream &readBuffer, unsigned int nBytes) : TStream(readBuffer.fFromVersion), fBuf(NULL, 0), fIn(&fBuf) {
     fCharBuf = new char[nBytes];
     ReadFromStream(readBuffer, fCharBuf, nBytes);
     fBuf.reinit(fCharBuf, nBytes);
     fIn.clear();
 }
 
-TBufferedStream::TBufferedStream(const TBufferedStream &other) : fBuf(NULL,0), fIn(&fBuf) {
+TBufferedStream::TBufferedStream(const TBufferedStream &other) : TStream(other), fBuf(NULL,0), fIn(&fBuf) {
     *this = other;
 }
 

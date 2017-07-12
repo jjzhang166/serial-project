@@ -26,6 +26,8 @@ typedef struct imemstream imemstream;
 class TStream {
 public:
     TStream();
+    TStream(const unsigned int fromVersion);
+    TStream(const TStream&);
     ~TStream();
     virtual TStream &operator>>(double &var);
     virtual TStream &operator<<(const double &var);
