@@ -19,6 +19,6 @@ private:
     std::istream fIn;
     std::ostringstream fOut;
     char *fCharBuf;
-    imembuf fBuf;
+    TMemBuf fBuf;
 };
 #endif // TBUFFEREDSTREAM_H

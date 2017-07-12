@@ -3,8 +3,8 @@
 #include "iostream"
 
 TLine::TLine() { 
-    pB.SetCoordinates(0., 0.);
-    pE.SetCoordinates(0., 0.);
+    pB.SetCoordinates(0., 0., 0.);
+    pE.SetCoordinates(0., 0., 0.);
      }
 TLine::TLine(const TLine &cp) { (*this) = cp; }
 TLine::~TLine() {}
@@ -14,17 +14,17 @@ TLine &TLine::operator=(const TLine &cp) {
     return *this;
 }
 
-void TLine::SetBeginPoint(const double &xB, const double &yB) {
-    pB.SetCoordinates(xB, yB);
+void TLine::SetBeginPoint(const double &xB, const double &yB, const double &zB) {
+    pB.SetCoordinates(xB, yB , zB);
 }
-void TLine::SetEndPoint(const double &xE, const double &yE) {
-    pE.SetCoordinates(xE, yE);
+void TLine::SetEndPoint(const double &xE, const double &yE, const double &zE) {
+    pE.SetCoordinates(xE, yE, zE);
 }
-void TLine::GetBeginPoint(double &xB, double &yB) {
-    pB.GetCoordinates(xB, yB);
+void TLine::GetBeginPoint(double &xB, double &yB, double &zB) {
+    pB.GetCoordinates(xB, yB, zB);
 }
-void TLine::GetEndPoint(double &xE, double &yE) {
-    pE.GetCoordinates(xE, yE);
+void TLine::GetEndPoint(double &xE, double &yE, double &zE) {
+    pE.GetCoordinates(xE, yE, zE);
 }
 
 void TLine::Read(TStream &stream) {

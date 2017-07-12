@@ -11,10 +11,10 @@ class TLine {
     ~TLine();
     TLine &operator=(const TLine &cp);
 
-    void SetBeginPoint(const double &xB, const double &yB);
-    void SetEndPoint(const double &xE, const double &yE);
-    void GetBeginPoint(double &xB, double &yB);
-    void GetEndPoint(double &xE, double &yE);
+    void SetBeginPoint(const double &xB, const double &yB, const double &zB);
+    void SetEndPoint(const double &xE, const double &yE, const double &zE);
+    void GetBeginPoint(double &xB, double &yB, double &zB);
+    void GetEndPoint(double &xE, double &yE, double &zE);
 
     void Read(TStream &stream);//stream!!
     void Write(TStream &stream) const;//stream!!

@@ -36,13 +36,14 @@ public:
 
             case 0: // TLine had changes in version 1
                 UpdateFromV0(buf); // returns v1 buffer
-                if (toVersion == buf.fFromVersion)
+                if (toVersion == buf.fFromVersion){
                     break;
+                }
             case 1: // TLine had changes in version 2
                 UpdateFromV1(buf); // returns v2 buffer
-                if (toVersion == buf.fFromVersion)
+                if (toVersion == buf.fFromVersion){
                     break;
-
+                }
             default:
                 UpdateAttributes(buf, toVersion);
         }

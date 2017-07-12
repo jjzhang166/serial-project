@@ -28,12 +28,12 @@ int main(int argc, char *argv[]) {
         std::cout << "printing..." << std::endl;
         TFileStream out;
         out.OpenWrite(fileName);
-        testLine.SetBeginPoint(0., 0.);
-        testLine.SetEndPoint(1.e23, 1.);
+        testLine.SetBeginPoint(0., 0., 0.);
+        testLine.SetEndPoint(1.e23, 1., 0.);
 
         testLine.Write(out);
     } else {
-        std::cout << "Which version should I read? " << std::endl;
+        std::cout << "Which version should I read from? " << std::endl;
         unsigned int versionNumber;
         std::cin >> versionNumber;
         fileName.append(std::to_string(versionNumber));
@@ -44,11 +44,11 @@ int main(int argc, char *argv[]) {
               << TStream::fCurrentVersion << std::endl;
         testLine.Read(in);
     }
-    double x, y;
-    testLine.GetBeginPoint(x, y);
-    std::cout << x << "\t" << y << std::endl;
-    testLine.GetEndPoint(x, y);
-    std::cout << x << "\t" << y << std::endl;
+    double x, y,z;
+    testLine.GetBeginPoint(x, y,z);
+    std::cout << x << "\t" << y <<  "\t" << z << std::endl;
+    testLine.GetEndPoint(x, y,z);
+    std::cout << x << "\t" << y <<  "\t" << z << std::endl;
 
     return 0;
 }

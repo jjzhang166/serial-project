@@ -16,7 +16,10 @@ class TPointTranslator {
         }
 
         switch (baseStream.fFromVersion) {
-            //no old versions, current is the most recent one
+            UpdateFromV2(buf); // returns v3 buffer
+            if (toVersion == buf.fFromVersion) {
+                break;
+            }
         default:
             UpdateAttributes(buf, toVersion);
         }
@@ -31,11 +34,16 @@ class TPointTranslator {
                 "from a version prior to its creation");
         }
         switch (versionNumber) {
-            //no old versions, current is the most recent one
-        default:
-            //stream << fX;
-            //stream << fY;
+        case 2:
+            // stream << fX;
+            // stream << fY;
             totalSize += 2 * sizeof(double);
+            break;
+        default: // 3 onwards
+            // stream << fX;
+            // stream << fY;
+            // stream << fZ;
+            totalSize += 3 * sizeof(double);
             break;
         }
         return totalSize;
@@ -46,8 +54,23 @@ class TPointTranslator {
         /*expects to read the attributes according to the most recent version
             of TLine. However, if any attribute is an object, its
            StreamTranslator will be called in order to account for changes in
-           its data structure. In V1, this method will do nothing, since the
+           its data structure. Up to V3, this method will do nothing, since the
            attributes are all of the primitive type double*/
+    }
+
+    static void UpdateFromV2(TBufferedStream &stream) {
+        //expects to read fX and fY(all double variables)
+        double aux;
+        stream >> aux; // reads fX
+        stream << aux;
+        stream >> aux; // reads fY
+        stream << aux;
+        aux = 0.; // creates fZ default value
+        stream << aux;
+        
+        stream.TransferBuffers();
+        stream.fFromVersion = 3;
+        // must return fX, fY and fZ(all double variables)
     }
 
   private:
