@@ -12,14 +12,11 @@ public:
     ~TStream();
     virtual TStream &operator>>(double &var);
     virtual TStream &operator<<(const double &var);
-    virtual std::streamsize StreamSize(TStream *stream);
+    virtual void Read(char *dest, const size_t &nBytes) = 0;
+    virtual void Write(const char *source, const size_t &nBytes) = 0;
+ 
     static const unsigned long fCurrentVersion = 3;
     unsigned long fFromVersion;
 
-protected:
-    void ReadFromStream(TStream &stream, char * &dest,
-            const unsigned int &nBytes);
-    virtual std::istream &GetReadStream() = 0;
-    virtual std::ostream &GetWriteStream() = 0;
 };
 #endif // TSTREAM_H

@@ -3,6 +3,7 @@
 #include "TBufferedStream.h"
 #include "TLine.h"
 #include "TPointTranslator.h"
+
 class TLineTranslator {
 public:
 
@@ -36,12 +37,12 @@ public:
 
             case 0: // TLine had changes in version 1
                 UpdateFromV0(buf); // returns v1 buffer
-                if (toVersion == buf.fFromVersion){
+                if (toVersion == buf.fFromVersion) {
                     break;
                 }
             case 1: // TLine had changes in version 2
                 UpdateFromV1(buf); // returns v2 buffer
-                if (toVersion == buf.fFromVersion){
+                if (toVersion == buf.fFromVersion) {
                     break;
                 }
             default:
@@ -84,8 +85,7 @@ public:
            its data structure.*/
         baseStream << TPointTranslator::UpdateStream(baseStream, toVersion);
         baseStream << TPointTranslator::UpdateStream(baseStream, toVersion);
-
-        baseStream.TransferBuffers();        
+        baseStream.fFromVersion = toVersion;
     }
 
     static void UpdateFromV0(TBufferedStream &stream) {
@@ -99,8 +99,7 @@ public:
         stream << aux2;
         stream >> aux1; // reads fYe
         stream << aux1;
-        
-        stream.TransferBuffers();
+
         stream.fFromVersion = 1;
         // must return fXb, fYb, fXe, fYe (all double variables)
     }

@@ -16,8 +16,8 @@ class TFileStream : public TStream {
     void CloseWrite();
 
   protected:
-    virtual std::istream &GetReadStream();
-    virtual std::ostream &GetWriteStream();
+    virtual void Read(char *dest, const size_t &nBytes);
+    virtual void Write(const char *source, const size_t &nBytes);
 
   private:
     std::ifstream fIn;

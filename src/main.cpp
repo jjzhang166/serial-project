@@ -1,10 +1,11 @@
 #include "TLine.h"
 #include "TFileStream.h"
+#include "TBufferedStream.h"
 #include <iostream>
 #include <string>
 #include <string.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {    
     if (argc != 2 || strlen(argv[1]) != 1) {
         std::cout << "usage:" << argv[0] << " [0,1]"
                   << " - 0 for reading 1 for writing" << std::endl;
