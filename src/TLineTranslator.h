@@ -9,7 +9,6 @@ public:
 
     static TBufferedStream UpdateStream(TStream &baseStream,
             const unsigned long toVersion) {
-        // reads N bytes (depending on stream.fFromVersion)
         TBufferedStream buf(baseStream);
         /*
             switch (stream.fFromVersion) {
@@ -67,14 +66,14 @@ public:
         stream.BeginUpdate();
         //expects to read fXb, fXe, fYb and fYe (all double variables)
         double aux1, aux2;
-        stream >> aux1; // reads fXb
-        stream << aux1;
-        stream >> aux2; // reads fXe
-        stream >> aux1; // reads fYb
-        stream << aux1;
-        stream << aux2;
-        stream >> aux1; // reads fYe
-        stream << aux1;
+        stream.Read(&aux1); // reads fXb
+        stream.Write(&aux1);
+        stream.Read(&aux2); // reads fXe
+        stream.Read(&aux1); // reads fYb
+        stream.Write(&aux1);
+        stream.Write(&aux2);
+        stream.Read(&aux1); // reads fYe
+        stream.Write(&aux1);
 
         // must return fXb, fYb, fXe, fYe (all double variables)
         stream.EndUpdate(1);
@@ -86,14 +85,14 @@ public:
 
         // must return fXb, fYb, fXe, fYe (all double variables)
         double aux;
-        stream >> aux; // reads fXb
-        stream << aux;
-        stream >> aux; // reads fYb
-        stream << aux;
-        stream >> aux; // reads fXe
-        stream << aux;
-        stream >> aux; // reads fYe
-        stream << aux;
+        stream.Read(&aux); // reads fXb
+        stream.Write(&aux);
+        stream.Read(&aux); // reads fYb
+        stream.Write(&aux);
+        stream.Read(&aux); // reads fXe
+        stream.Write(&aux);
+        stream.Read(&aux); // reads fYe
+        stream.Write(&aux);
         stream.EndUpdate(2);
     }
 

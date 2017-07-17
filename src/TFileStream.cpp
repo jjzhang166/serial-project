@@ -22,6 +22,7 @@ void TFileStream::OpenRead(const std::string &fileName) {
 
     fFromVersion = 0;
 }
+
 void TFileStream::OpenWrite(const std::string &fileName) {
     if (fOut.is_open()) {
         throw std::runtime_error("TFileStream: File is already opened");
@@ -33,7 +34,7 @@ void TFileStream::OpenWrite(const std::string &fileName) {
     std::string fileInfo("FileVersion");
     fOut.write(fileInfo.c_str(), fileInfo.length());
     const unsigned long temp = fCurrentVersion;
-    fOut.write(reinterpret_cast<const char *>(&temp), sizeof(temp));
+    fOut.write(reinterpret_cast<const char *> (&temp), sizeof (temp));
 }
 
 void TFileStream::CloseRead() {
@@ -48,12 +49,17 @@ void TFileStream::CloseWrite() {
     }
 }
 
-TStream &TFileStream::operator>>(double &var) {
-    fIn.operator >>(var);
-    return *this;
+void TFileStream::Read(double *p, int size) {
+    char buf[100];
+    if (!fIn) {
+        throw std::runtime_error("TFileStream: input stream not set.");
+    }
+    if (size) {
+        for (int c = 0; c < size; c++) fIn >> p[c];
+        fIn.getline(buf, 100);
+    }
 }
 
-TStream &TFileStream::operator<<(const double &var) {
-    fOut.operator <<(var);
-    return *this;
+void TFileStream::Write(const double *p, int size) {
+    for (int c = 0; c < size; c++) fOut << p[c] << std::endl;
 }

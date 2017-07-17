@@ -59,26 +59,16 @@ void TBFileStream::CloseWrite() {
     }
 }
 
-void TBFileStream::Read(char * dest, const size_t &nBytes){
-    fIn.read(dest, nBytes);
+void TBFileStream::Read(double *p, int size){
+    fIn.read(reinterpret_cast<char *> (p), size*sizeof(double));
     if (fIn.bad()){
         throw std::runtime_error("TBFileStream:Could not read from stream");
     }
 }
     
-void TBFileStream::Write(const char *source, const size_t &nBytes){
-    fOut.write(source, nBytes);
+void TBFileStream::Write(const double *var, int size){
+    fOut.write(reinterpret_cast<const char *> (var), size*sizeof(double));
     if (fOut.bad()) {
         throw std::runtime_error("TBFileStream:Could not write to stream");
     }
-}
-
-TStream &TBFileStream::operator>>(double &var) {
-    Read(reinterpret_cast<char *> (&var), sizeof (var));
-    return *this;
-}
-
-TStream &TBFileStream::operator<<(const double &var) {
-    Write(reinterpret_cast<const char *> (&var), sizeof (var));
-    return *this;
 }

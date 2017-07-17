@@ -45,8 +45,8 @@ TBufferedStream::~TBufferedStream() {
 TBufferedStream &TBufferedStream::operator<<(TBufferedStream &other) {
     const unsigned int nBytesOther = other.fSize;
     char temp[nBytesOther];
-    other.Read(temp, nBytesOther);
-    Write(temp, nBytesOther);
+    other.ReadFromBuffer(temp, nBytesOther);
+    WriteToBuffer(temp, nBytesOther);
     return *this;
 }
 
@@ -54,25 +54,23 @@ TBufferedStream &TBufferedStream::operator<<(const TBufferedStream &other) {
     const unsigned int nBytesOther = other.fSize;
     char temp[nBytesOther];
     other.ConstRead(temp, nBytesOther);
-    Write(temp, nBytesOther);
+    WriteToBuffer(temp, nBytesOther);
     return *this;
 }
 
-TStream &TBufferedStream::operator>>(double &var) {
+void TBufferedStream::Read(double *p, int size){
     if (readFromUnderlyingStream) {
-        underlyingStream >> var;
+        underlyingStream.Read(p, size);
     } else {
-        Read(reinterpret_cast<char *> (&var), sizeof (var));
+        ReadFromBuffer(reinterpret_cast<char *> (p), size*sizeof (double));
     }
-    return *this;
 }
 
-TStream &TBufferedStream::operator<<(const double &var) {
-    Write(reinterpret_cast<const char *> (&var), sizeof (var));
-    return *this;
+void TBufferedStream::Write(const double *var, int size){
+    WriteToBuffer(reinterpret_cast<const char *> (var), size*sizeof (double));
 }
 
-void TBufferedStream::Read(char *dest, const size_t &nBytes) {
+void TBufferedStream::ReadFromBuffer(char *dest, const size_t &nBytes) {
     if (nBytes > fSize) {
         std::string msg("TBufferedStream: Cannot read ");
         msg.append(std::to_string(nBytes));
@@ -132,7 +130,7 @@ void TBufferedStream::ConstReadFromBuffer(char *dest, const size_t &nBytes) cons
     }
 }
 
-void TBufferedStream::Write(const char *source, const size_t &nBytes) {
+void TBufferedStream::WriteToBuffer(const char *source, const size_t &nBytes) {
     if (fSize + nBytes > nAllocatedBytes) {
         size_t oldSize = fSize;
         size_t newAllocatedBytes = oldSize + nBytes + SIZE_INCREMENT;
