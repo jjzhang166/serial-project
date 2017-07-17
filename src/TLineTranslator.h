@@ -51,32 +51,6 @@ public:
         return buf;
     }
 
-    static unsigned int SizeOfClass(const unsigned int &versionNumber) {
-        unsigned int totalSize = 0;
-        switch (versionNumber) {
-            case 0:
-                // stream << fXb;
-                // stream << fXe;
-                // stream << fYb;
-                // stream << fYe;
-                totalSize += 4 * sizeof (double);
-                break;
-            case 1:
-                // stream << fXb;
-                // stream << fYb;
-                // stream << fXe;
-                // stream << fYe;
-                totalSize += 4 * sizeof (double);
-                break;
-            default: //2 onwards
-                //pB.Write(stream);
-                //pE.Write(stream);
-                totalSize += 2 * TPointTranslator::SizeOfClass(versionNumber);
-                break;
-        }
-        return totalSize;
-    }
-
     static void UpdateAttributes(TBufferedStream &stream,
             const unsigned long &toVersion) {
         stream.BeginUpdate();

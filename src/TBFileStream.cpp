@@ -13,11 +13,11 @@ TBFileStream::~TBFileStream() {
 
 void TBFileStream::OpenRead(const std::string &fileName) {
     if (fIn.is_open()) {
-        throw std::runtime_error("TFileStream: File is already opened");
+        throw std::runtime_error("TBFileStream: File is already opened");
     }
     fIn.open(fileName.c_str(), std::ifstream::binary);
     if (!fIn.is_open()) {
-        throw std::runtime_error("TFileStream: Could not open file");
+        throw std::runtime_error("TBFileStream: Could not open file");
     }
 
     std::string versionString("FileVersion");
@@ -32,15 +32,14 @@ void TBFileStream::OpenRead(const std::string &fileName) {
         fFromVersion = 0;
         fIn.seekg(0, fIn.beg); // goes back to beginning of file
     }
-    // fill stream
 }
 void TBFileStream::OpenWrite(const std::string &fileName) {
     if (fOut.is_open()) {
-        throw std::runtime_error("TFileStream: File is already opened");
+        throw std::runtime_error("TBFileStream: File is already opened");
     }
     fOut.open(fileName.c_str(), std::ofstream::binary | std::ofstream::trunc);
     if (!fOut.is_open()) {
-        throw std::runtime_error("TFileStream: Could not open file");
+        throw std::runtime_error("TBFileStream: Could not open file");
     }
     std::string fileInfo("FileVersion");
     fOut.write(fileInfo.c_str(), fileInfo.length());
@@ -63,14 +62,14 @@ void TBFileStream::CloseWrite() {
 void TBFileStream::Read(char * dest, const size_t &nBytes){
     fIn.read(dest, nBytes);
     if (fIn.bad()){
-        throw std::runtime_error("TFileStream:Could not read from stream");
+        throw std::runtime_error("TBFileStream:Could not read from stream");
     }
 }
     
 void TBFileStream::Write(const char *source, const size_t &nBytes){
     fOut.write(source, nBytes);
     if (fOut.bad()) {
-        throw std::runtime_error("TFileStream:Could not write to stream");
+        throw std::runtime_error("TBFileStream:Could not write to stream");
     }
 }
 

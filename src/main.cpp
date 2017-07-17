@@ -1,6 +1,7 @@
 #include "TLine.h"
 #include "TBFileStream.h"
 #include "TBufferedStream.h"
+#include "TFileStreamFactory.h"
 #include <iostream>
 #include <string>
 #include <string.h>
@@ -39,11 +40,11 @@ int main(int argc, char *argv[]) {
         std::cin >> versionNumber;
         fileName.append(std::to_string(versionNumber));
     	fileName.append(".dat");
-        TBFileStream in;
-        in.OpenRead(fileName);
-        std::cout << "reading from version " << in.fFromVersion << " @ version "
+        TStream *in = TFileStreamFactory::openReadFileStream(fileName);
+        std::cout << "reading from version " << in->fFromVersion << " @ version "
               << TStream::fCurrentVersion << std::endl;
-        testLine.Read(in);
+        testLine.Read(*in);
+        delete in;
     }
     double x, y,z;
     testLine.GetBeginPoint(x, y,z);

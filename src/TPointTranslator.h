@@ -28,29 +28,6 @@ public:
         return buf;
     }
 
-    static unsigned int SizeOfClass(const unsigned int &versionNumber) {
-        unsigned int totalSize = 0;
-        if (versionNumber < 2) {
-            throw std::runtime_error(
-                    "TPointTranslator:Trying to calculate the size of a TPoint "
-                    "from a version prior to its creation");
-        }
-        switch (versionNumber) {
-            case 2:
-                // stream << fX;
-                // stream << fY;
-                totalSize += 2 * sizeof (double);
-                break;
-            default: // 3 onwards
-                // stream << fX;
-                // stream << fY;
-                // stream << fZ;
-                totalSize += 3 * sizeof (double);
-                break;
-        }
-        return totalSize;
-    }
-
     static void UpdateAttributes(TBufferedStream & stream,
             const unsigned long & toVersion) {
         stream.BeginUpdate();
