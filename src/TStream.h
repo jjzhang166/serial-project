@@ -9,7 +9,7 @@ public:
     TStream();
     TStream(const unsigned int fromVersion);
     TStream(const TStream&);
-    ~TStream();
+    virtual ~TStream();
     virtual void Read(double *p, int size=1)=0;
     virtual void Write(const double *var, int size=1) = 0;
 
