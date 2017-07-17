@@ -9,7 +9,7 @@ public:
     static TBufferedStream UpdateStream(TStream &baseStream,
             const unsigned long toVersion) {
         // reads N bytes (depending on stream.fFromVersion)
-        TBufferedStream buf(baseStream, SizeOfClass(baseStream.fFromVersion));
+        TBufferedStream buf(baseStream);
         // TPoint didnt exist prior to version 2
         if (baseStream.fFromVersion < 2) {
             throw std::runtime_error("TPointTranslator:Trying to read a TPoint "
@@ -53,15 +53,23 @@ public:
 
     static void UpdateAttributes(TBufferedStream & stream,
             const unsigned long & toVersion) {
+        stream.BeginUpdate();
         /*expects to read the attributes according to the most recent version
             of TLine. However, if any attribute is an object, its
            StreamTranslator will be called in order to account for changes in
-           its data structure. Up to V3, this method will do nothing, since the
-           attributes are all of the primitive type double*/
-        stream.fFromVersion = toVersion;
+           its data structure.*/
+        double aux;
+        stream >> aux; // reads fX
+        stream << aux;
+        stream >> aux; // reads fY
+        stream << aux;
+        stream >> aux; // reads fZ
+        stream << aux;
+        stream.EndUpdate(toVersion);
     }
 
     static void UpdateFromV2(TBufferedStream &stream) {
+        stream.BeginUpdate();
         //expects to read fX and fY(all double variables)
         double aux;
         stream >> aux; // reads fX
@@ -71,8 +79,8 @@ public:
         aux = 0.; // creates fZ default value
         stream << aux;
 
-        stream.fFromVersion = 3;
         // must return fX, fY and fZ(all double variables)
+        stream.EndUpdate(3);
     }
 
 private:

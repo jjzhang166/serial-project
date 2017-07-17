@@ -1,19 +1,22 @@
-#ifndef TFILESTREAM_H
-#define TFILESTREAM_H
+#ifndef TBFILESTREAM_H
+#define TBFILESTREAM_H
 #include "TStream.h"
 #include <fstream>
 #include <string>
 
-class TFileStream : public TStream {
+class TBFileStream : public TStream {
   public:
-    TFileStream();
-    ~TFileStream();
+    TBFileStream();
+    ~TBFileStream();
 
     void OpenRead(const std::string &fileName);
     void OpenWrite(const std::string &fileName);
 
     void CloseRead();
     void CloseWrite();
+    
+    TStream &operator>>(double &var);
+    TStream &operator<<(const double &var);
 
   protected:
     virtual void Read(char *dest, const size_t &nBytes);
@@ -23,4 +26,4 @@ class TFileStream : public TStream {
     std::ifstream fIn;
     std::ofstream fOut;
 };
-#endif // TFILESTREAM_H
+#endif // TBFILESTREAM_H

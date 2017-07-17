@@ -10,7 +10,7 @@ public:
     static TBufferedStream UpdateStream(TStream &baseStream,
             const unsigned long toVersion) {
         // reads N bytes (depending on stream.fFromVersion)
-        TBufferedStream buf(baseStream, SizeOfClass(baseStream.fFromVersion));
+        TBufferedStream buf(baseStream);
         /*
             switch (stream.fFromVersion) {
 
@@ -77,18 +77,20 @@ public:
         return totalSize;
     }
 
-    static void UpdateAttributes(TBufferedStream &baseStream,
+    static void UpdateAttributes(TBufferedStream &stream,
             const unsigned long &toVersion) {
+        stream.BeginUpdate();
         /*expects to read the attributes according to the most recent version
             of TLine. However, if any attribute is an object, its
            StreamTranslator will be called in order to account for changes in
            its data structure.*/
-        baseStream << TPointTranslator::UpdateStream(baseStream, toVersion);
-        baseStream << TPointTranslator::UpdateStream(baseStream, toVersion);
-        baseStream.fFromVersion = toVersion;
+        stream << TPointTranslator::UpdateStream(stream, toVersion);
+        stream << TPointTranslator::UpdateStream(stream, toVersion);
+        stream.EndUpdate(toVersion);
     }
 
     static void UpdateFromV0(TBufferedStream &stream) {
+        stream.BeginUpdate();
         //expects to read fXb, fXe, fYb and fYe (all double variables)
         double aux1, aux2;
         stream >> aux1; // reads fXb
@@ -100,15 +102,25 @@ public:
         stream >> aux1; // reads fYe
         stream << aux1;
 
-        stream.fFromVersion = 1;
         // must return fXb, fYb, fXe, fYe (all double variables)
+        stream.EndUpdate(1);
     }
 
     static void UpdateFromV1(TBufferedStream &stream) {
+        stream.BeginUpdate();
         //expects to read fXb, fYb, fXe and fYe (all double variables) 
-        stream.fFromVersion = 2;
+
         // must return fXb, fYb, fXe, fYe (all double variables)
-        //does nothing, since the use of TPoint preserves the file structure.
+        double aux;
+        stream >> aux; // reads fXb
+        stream << aux;
+        stream >> aux; // reads fYb
+        stream << aux;
+        stream >> aux; // reads fXe
+        stream << aux;
+        stream >> aux; // reads fYe
+        stream << aux;
+        stream.EndUpdate(2);
     }
 
 private:

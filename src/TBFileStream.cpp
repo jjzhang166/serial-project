@@ -1,17 +1,17 @@
-#include "TFileStream.h"
+#include "TBFileStream.h"
 #include <exception>
 #include <iostream>
 #include <string>
 
-TFileStream::TFileStream() {
+TBFileStream::TBFileStream() {
 }
 
-TFileStream::~TFileStream() {
+TBFileStream::~TBFileStream() {
     CloseWrite();
     CloseRead();
 }
 
-void TFileStream::OpenRead(const std::string &fileName) {
+void TBFileStream::OpenRead(const std::string &fileName) {
     if (fIn.is_open()) {
         throw std::runtime_error("TFileStream: File is already opened");
     }
@@ -34,7 +34,7 @@ void TFileStream::OpenRead(const std::string &fileName) {
     }
     // fill stream
 }
-void TFileStream::OpenWrite(const std::string &fileName) {
+void TBFileStream::OpenWrite(const std::string &fileName) {
     if (fOut.is_open()) {
         throw std::runtime_error("TFileStream: File is already opened");
     }
@@ -48,28 +48,38 @@ void TFileStream::OpenWrite(const std::string &fileName) {
     fOut.write(reinterpret_cast<const char *>(&temp), sizeof(temp));
 }
 
-void TFileStream::CloseRead() {
+void TBFileStream::CloseRead() {
     if (fIn.is_open()) {
         fIn.close();
     }
 }
 
-void TFileStream::CloseWrite() {
+void TBFileStream::CloseWrite() {
     if (fOut.is_open()) {
         fOut.close();
     }
 }
 
-void TFileStream::Read(char * dest, const size_t &nBytes){
+void TBFileStream::Read(char * dest, const size_t &nBytes){
     fIn.read(dest, nBytes);
     if (fIn.bad()){
         throw std::runtime_error("TFileStream:Could not read from stream");
     }
 }
     
-void TFileStream::Write(const char *source, const size_t &nBytes){
+void TBFileStream::Write(const char *source, const size_t &nBytes){
     fOut.write(source, nBytes);
     if (fOut.bad()) {
         throw std::runtime_error("TFileStream:Could not write to stream");
     }
+}
+
+TStream &TBFileStream::operator>>(double &var) {
+    Read(reinterpret_cast<char *> (&var), sizeof (var));
+    return *this;
+}
+
+TStream &TBFileStream::operator<<(const double &var) {
+    Write(reinterpret_cast<const char *> (&var), sizeof (var));
+    return *this;
 }
