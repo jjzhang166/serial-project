@@ -25,12 +25,12 @@ void TPoint::GetCoordinates(double &x, double &y, double &z) {
 
 void TPoint::Read(TStream &stream) {
     TBufferedStream buf(TPointTranslator::UpdateStream(stream, TStream::fCurrentVersion));
-    buf >> fX;
-    buf >> fY;
-    buf >> fZ;
+    buf.Read(&fX);
+    buf.Read(&fY);
+    buf.Read(&fZ);
 }
 void TPoint::Write(TStream &stream) const {
-    stream << fX;
-    stream << fY;
-    stream << fZ;
+    stream.Write(&fX);
+    stream.Write(&fY);
+    stream.Write(&fZ);
 }

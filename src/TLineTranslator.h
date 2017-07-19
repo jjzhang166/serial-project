@@ -9,8 +9,7 @@ public:
 
     static TBufferedStream UpdateStream(TStream &baseStream,
             const unsigned long toVersion) {
-        // reads N bytes (depending on stream.fFromVersion)
-        TBufferedStream buf(baseStream, SizeOfClass(baseStream.fFromVersion));
+        TBufferedStream buf(baseStream);
         /*
             switch (stream.fFromVersion) {
 
@@ -51,64 +50,50 @@ public:
         return buf;
     }
 
-    static unsigned int SizeOfClass(const unsigned int &versionNumber) {
-        unsigned int totalSize = 0;
-        switch (versionNumber) {
-            case 0:
-                // stream << fXb;
-                // stream << fXe;
-                // stream << fYb;
-                // stream << fYe;
-                totalSize += 4 * sizeof (double);
-                break;
-            case 1:
-                // stream << fXb;
-                // stream << fYb;
-                // stream << fXe;
-                // stream << fYe;
-                totalSize += 4 * sizeof (double);
-                break;
-            default: //2 onwards
-                //pB.Write(stream);
-                //pE.Write(stream);
-                totalSize += 2 * TPointTranslator::SizeOfClass(versionNumber);
-                break;
-        }
-        return totalSize;
-    }
-
-    static void UpdateAttributes(TBufferedStream &baseStream,
+    static void UpdateAttributes(TBufferedStream &stream,
             const unsigned long &toVersion) {
+        stream.BeginUpdate();
         /*expects to read the attributes according to the most recent version
             of TLine. However, if any attribute is an object, its
            StreamTranslator will be called in order to account for changes in
            its data structure.*/
-        baseStream << TPointTranslator::UpdateStream(baseStream, toVersion);
-        baseStream << TPointTranslator::UpdateStream(baseStream, toVersion);
-        baseStream.fFromVersion = toVersion;
+        stream << TPointTranslator::UpdateStream(stream, toVersion);
+        stream << TPointTranslator::UpdateStream(stream, toVersion);
+        stream.EndUpdate(toVersion);
     }
 
     static void UpdateFromV0(TBufferedStream &stream) {
+        stream.BeginUpdate();
         //expects to read fXb, fXe, fYb and fYe (all double variables)
         double aux1, aux2;
-        stream >> aux1; // reads fXb
-        stream << aux1;
-        stream >> aux2; // reads fXe
-        stream >> aux1; // reads fYb
-        stream << aux1;
-        stream << aux2;
-        stream >> aux1; // reads fYe
-        stream << aux1;
+        stream.Read(&aux1); // reads fXb
+        stream.Write(&aux1);
+        stream.Read(&aux2); // reads fXe
+        stream.Read(&aux1); // reads fYb
+        stream.Write(&aux1);
+        stream.Write(&aux2);
+        stream.Read(&aux1); // reads fYe
+        stream.Write(&aux1);
 
-        stream.fFromVersion = 1;
         // must return fXb, fYb, fXe, fYe (all double variables)
+        stream.EndUpdate(1);
     }
 
     static void UpdateFromV1(TBufferedStream &stream) {
+        stream.BeginUpdate();
         //expects to read fXb, fYb, fXe and fYe (all double variables) 
-        stream.fFromVersion = 2;
+
         // must return fXb, fYb, fXe, fYe (all double variables)
-        //does nothing, since the use of TPoint preserves the file structure.
+        double aux;
+        stream.Read(&aux); // reads fXb
+        stream.Write(&aux);
+        stream.Read(&aux); // reads fYb
+        stream.Write(&aux);
+        stream.Read(&aux); // reads fXe
+        stream.Write(&aux);
+        stream.Read(&aux); // reads fYe
+        stream.Write(&aux);
+        stream.EndUpdate(2);
     }
 
 private:

@@ -1,13 +1,13 @@
-#ifndef TFILESTREAM_H
-#define TFILESTREAM_H
+#ifndef TBFILESTREAM_H
+#define TBFILESTREAM_H
 #include "TStream.h"
 #include <fstream>
 #include <string>
 
-class TFileStream : public TStream {
+class TBFileStream : public TStream {
   public:
-    TFileStream();
-    ~TFileStream();
+    TBFileStream();
+    ~TBFileStream();
 
     void OpenRead(const std::string &fileName);
     void OpenWrite(const std::string &fileName);
@@ -17,9 +17,9 @@ class TFileStream : public TStream {
 
     void CloseRead();
     void CloseWrite();
-    
+
   private:
     std::ifstream fIn;
     std::ofstream fOut;
 };
-#endif // TFILESTREAM_H
+#endif // TBFILESTREAM_H

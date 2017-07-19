@@ -12,20 +12,21 @@
 //    fLast = fBuffer - 1 + fSize;
 //}
 
-TBufferedStream::TBufferedStream(TStream &readBuffer, const size_t &nBytes) : TStream(readBuffer.fFromVersion) {
-    nAllocatedBytes = nBytes + SIZE_INCREMENT;
+TBufferedStream::TBufferedStream(TStream &underlyingStream) : TStream(underlyingStream.fFromVersion), underlyingStream(underlyingStream) {
+    nAllocatedBytes = SIZE_INCREMENT;
     fBuffer = new char[nAllocatedBytes];
     fFirst = fBuffer;
-    readBuffer.Read(fBuffer, nBytes);
-    fSize = nBytes;
-    fLast = fBuffer - 1 + fSize;
+    fSize = 0;
+    fLast = fBuffer - 1;
+    readFromUnderlyingStream = true;
 }
 
-TBufferedStream::TBufferedStream(const TBufferedStream &other) : TStream(other), fBuffer(NULL) {
+TBufferedStream::TBufferedStream(const TBufferedStream &other) : TStream(other), fBuffer(NULL), underlyingStream(other.underlyingStream) {
     *this = other;
 }
 
 TBufferedStream &TBufferedStream::operator=(const TBufferedStream &other) {
+    underlyingStream = other.underlyingStream;
     nAllocatedBytes = other.nAllocatedBytes;
     if (fBuffer) delete[] fBuffer;
     fBuffer = new char[nAllocatedBytes];
@@ -33,6 +34,7 @@ TBufferedStream &TBufferedStream::operator=(const TBufferedStream &other) {
     fSize = other.fSize;
     fFirst = fBuffer;
     fLast = fBuffer - 1 + fSize;
+    readFromUnderlyingStream = other.readFromUnderlyingStream;
     return *this;
 }
 
@@ -43,8 +45,8 @@ TBufferedStream::~TBufferedStream() {
 TBufferedStream &TBufferedStream::operator<<(TBufferedStream &other) {
     const unsigned int nBytesOther = other.fSize;
     char temp[nBytesOther];
-    other.Read(temp, nBytesOther);
-    Write(temp, nBytesOther);
+    other.ReadFromBuffer(temp, nBytesOther);
+    WriteToBuffer(temp, nBytesOther);
     return *this;
 }
 
@@ -52,11 +54,23 @@ TBufferedStream &TBufferedStream::operator<<(const TBufferedStream &other) {
     const unsigned int nBytesOther = other.fSize;
     char temp[nBytesOther];
     other.ConstRead(temp, nBytesOther);
-    Write(temp, nBytesOther);
+    WriteToBuffer(temp, nBytesOther);
     return *this;
 }
 
-void TBufferedStream::Read(char *dest, const size_t &nBytes) {
+void TBufferedStream::Read(double *p, int size){
+    if (readFromUnderlyingStream) {
+        underlyingStream.Read(p, size);
+    } else {
+        ReadFromBuffer(reinterpret_cast<char *> (p), size*sizeof (double));
+    }
+}
+
+void TBufferedStream::Write(const double *var, int size){
+    WriteToBuffer(reinterpret_cast<const char *> (var), size*sizeof (double));
+}
+
+void TBufferedStream::ReadFromBuffer(char *dest, const size_t &nBytes) {
     if (nBytes > fSize) {
         std::string msg("TBufferedStream: Cannot read ");
         msg.append(std::to_string(nBytes));
@@ -85,6 +99,14 @@ void TBufferedStream::Read(char *dest, const size_t &nBytes) {
 }
 
 void TBufferedStream::ConstRead(char *dest, const size_t &nBytes) const {
+    if (readFromUnderlyingStream) {
+        throw std::runtime_error("TBufferedStream: We are still reading from the "
+                "underlying stream and cannot guarantee that it can be const read!");
+    }
+    ConstReadFromBuffer(dest, nBytes);
+}
+
+void TBufferedStream::ConstReadFromBuffer(char *dest, const size_t &nBytes) const {
     if (nBytes > fSize) {
         std::string msg("TBufferedStream: Cannot read ");
         msg.append(std::to_string(nBytes));
@@ -108,12 +130,12 @@ void TBufferedStream::ConstRead(char *dest, const size_t &nBytes) const {
     }
 }
 
-void TBufferedStream::Write(const char *source, const size_t &nBytes) {
+void TBufferedStream::WriteToBuffer(const char *source, const size_t &nBytes) {
     if (fSize + nBytes > nAllocatedBytes) {
         size_t oldSize = fSize;
         size_t newAllocatedBytes = oldSize + nBytes + SIZE_INCREMENT;
         char *temp = new char[newAllocatedBytes];
-        ConstRead(temp, oldSize);
+        ConstReadFromBuffer(temp, oldSize);
         memcpy(temp + oldSize, source, nBytes);
         delete[] fBuffer;
         fBuffer = temp;
@@ -142,12 +164,20 @@ void TBufferedStream::Write(const char *source, const size_t &nBytes) {
     }
 }
 
-void TBufferedStream::Print(){
+void TBufferedStream::Print() {
     std::cout << "fSize=" << fSize << std::endl;
-    double temp[fSize/8];
-    ConstRead(reinterpret_cast<char*>(temp), fSize);
-    for (unsigned int i = 0; i < fSize/8; ++i) {
+    double temp[fSize / 8];
+    ConstRead(reinterpret_cast<char*> (temp), fSize);
+    for (unsigned int i = 0; i < fSize / 8; ++i) {
         std::cout << temp[i] << " ";
     }
     std::cout << std::endl;
+}
+
+void TBufferedStream::BeginUpdate() {
+}
+
+void TBufferedStream::EndUpdate(unsigned long new_version) {
+    fFromVersion = new_version;
+    readFromUnderlyingStream = false;
 }
